@@ -1,117 +1,118 @@
 # Shopee Blocker
 
-Block seluruh ekosistem Shopee / Sea Group di level DNS + network. No app. No link. No web. No redirect. No auto-download.
+Kill the whole Shopee / Sea ecosystem at the DNS + network level. No app. No link. No web. No redirect. No auto-download.
 
 ---
 
-## Kenapa ada repo ini (#visi)
+## Why this exists (#why)
 
-Bukan benci Shopee. Ini soal **kontrol**.
+It's not about hating Shopee. It's about **control**.
 
-Di Android modern, "setting default link tertaut" dan fitur arsip aplikasi itu belatuk — mereka membalik kontrol ke vendor. Lo klik link apapun yang mengandung jejak Shopee, dan tanpa lo sepakat, lo dibawa ke:
+On modern Android, "default link handler" and app archive features are sneaky — they flip control to the vendor. You tap any link with a Shopee trace, and without your consent you get dragged into:
 
-- redirect handler Shopee,
-- halaman web Shopee yang minta install app,
+- Shopee redirect handlers,
+- Shopee web pages that beg you to install the app,
 - auto-tracking / auto-launch.
 
-Hasilnya: kuota data habis, perhatian diarahkan ke toko yang nggak lo minta, dan device lo jadi "pengumpul sampah redirect".
+Result: data quota burned, attention funneled into a store you never asked for, and your device becomes a redirect landfill.
 
-**Visi repo ini:** kembalikan kontrol itu ke tangan user. Satu cara, tegas, terverifikasi: semua jalur menuju Shopee di device ditutup dari akar.
+**Vision of this repo:** give that control back to the user. One way, firm, verified: every path to Shopee on-device gets shut down at the root.
 
-**Misi:**
+**Mission:**
 
-1. Tutup jalur **DNS** — semua domain Shopee/Sea nggak akan pernah resolve ke IP aslinya.
-2. Tutup jalur **network** — bahkan kalau ada IP yang sudah di-cache, tetap kena REJECT.
-3. **Tanpa app tambahan** — satu Magisk module, systemless, bisa di-uninstall bersih.
-4. **Anti-gangguan** — domain di luar Shopee nggak disentuh sama sekali.
-5. **Terlihat** — ada monitor untuk ngecek seberapa sering koneksi ke Shopee dicoba.
+1. **Close the DNS path** — every Shopee/Sea domain never resolves to a real IP.
+2. **Close the network path** — even already-cached IPs still get REJECTed.
+3. **No extra apps** — a single systemless Magisk module, cleanly uninstallable.
+4. **Zero collateral** — non-Shopee domains are completely untouched.
+5. **Visible** — a monitor exists to watch how often Shopee connection attempts happen.
 
 ---
 
-## Keluhan: apa yang Shopee lakukan ke device (#keluhan)
+## The complaint: what Shopee does to your device (#complaint)
 
-Akar masalahnya bukan "app Shopee di-install". Masalahnya adalah **jalan pintas yang mengeksploitasi platform**:
+The root problem is not "the Shopee app is installed." The problem is the **shortcuts that exploit the platform**:
 
-| Keluhan | Kenapa ini masalah |
+| Grievance | Why it's a problem |
 |---|---|
-| Redirect tanpa izin | Klik link apapun → dibawa ke Shopee web walau user nggak klik Shopee |
-| Web yang nggak diminta | "Arsipkan aplikasi" / "buka default link tertaut" tetap memanggil domain Shopee |
-| Haus data | Loader/page content Shopee = ribuan per request, kuota minimal |
-| Auto-nudge install | Shopee web selalu nyuruh install app → pressure, bukan pilihan |
-| Family-situs (SEA) | Blokir satu domain aja nggak cukup; Shopee bisa lewat cabang lain |
+| Redirect without consent | Tap any link → dragged to Shopee web even though you never opened Shopee |
+| Web you didn't ask for | "Archive app" / "open default linked links" still call Shopee domains |
+| Data hungry | Shopee page loaders = thousands of requests, minimum quota to burn |
+| Install nagging | Shopee web always pushes you to install the app — pressure, not choice |
+| Site family (SEA) | Blocking one domain isn't enough; Shopee can come through another branch |
 
-Repo ini nggak nyelesaiin "kenapa Shopee begitu" — itu urusan bisnis mereka. Yang diurus di sini: **device lo bukan korban default mereka lagi.**
+This repo doesn't fix "why Shopee behaves that way" — that's their business problem. What's handled here: **your device is not their default target anymore.**
 
 ---
 
-## Cara kerja module (#cara-kerja)
+## How it works (#how-it-works)
 
-### Lapisan 1 — DNS / hosts (systemless)
+### Layer 1 — DNS / hosts (systemless)
 
-Module nge-`mount --bind` filesystem `system/etc/hosts` selama boot/before-mount. Isinya memetakan ~100 domain Shopee + Sea Group ke `0.0.0.0`:
+The module `mount --bind`s `system/etc/hosts` at boot/pre-mount. It maps ~100 Shopee + Sea domains to `0.0.0.0`:
 
-- shopee.co.id, m./s./api./seller./live./mall./pay./help. — subdomain utama
-- semua cabang regional: shopee.com, .my, .sg, .vn, .th, .ph, .tw, .br, .mx, dst
-- short-link & tracking: shope.ee, shp.ee, shopee.io, shopeeads.com, shopeemobile.com
-- induk: sea.com, seagroup.com
+- shopee.co.id, m./s./api./seller./live./mall./pay./help. — main subdomains
+- all regional branches: shopee.com, .my, .sg, .vn, .th, .ph, .tw, .br, .mx, etc.
+- short-links & tracking: shope.ee, shp.ee, shopee.io, shopeeads.com, shopeemobile.com
+- the parent: sea.com, seagroup.com
 
-Hasilnya: resolver (netd) **ngereturn 127.0.0.1/0.0.0.0 lokal**, query nggak pernah keluar device. Browsing normal tetap jalan.
+Result: the resolver (netd) **returns 127.0.0.1/0.0.0.0 locally**, no query ever leaves the device. Normal browsing keeps working.
 
-### Lapisan 2 — iptables REJECT
+### Layer 2 — iptables REJECT
 
-`service.sh` bikin chain `SHOPEE` berisi 10 rule REJECT ke IP range hasil resolusi resmi Shopee:
+`service.sh` builds a `SHOPEE` chain with 10 REJECT rules targeting Shopee's officially-resolved IP ranges:
 
 ```
-147.136.0.0/16      <- cloud utama Shopee SEA
+147.136.0.0/16      <- main Shopee SEA cloud
 134.65.0.0/16       <- Shopee SEA
 45.119.218.0/24     <- shopee.vn
 103.115.76.0/24     <- live.shopee.vn
 119.28.32.0/24      <- shopeeads.com
 ```
 
-Lalu di-insert di posisi paling atas chain `OUTPUT`:
+Then it's inserted at the very top of `OUTPUT`:
 
 ```
 iptables -I OUTPUT 1 -j SHOPEE
 ```
 
-TCP dijawab `tcp-reset`, UDP dijawab `icmp-port-unreachable`. Ini benteng kedua: **kalau IP yang dipanggil sudah ter-cache di suatu app, tetap nggak akan konek.** Semua app jadi terkena blokir — Chrome, browser system, app apa pun, deeplink, redirect handler. Bukan per-app, tapi per-network.
+TCP answers `tcp-reset`, UDP answers `icmp-port-unreachable`. This is the second wall: **even if an app has an IP cached, it still won't connect.** Every app is affected — Chrome, system browsers, any app, deeplinks, redirect handlers. Not per-app, but per-network.
 
-### Anti-lupa (monitor)
+### Anti-lapse monitor
 
-netd sering mereset aturan custom saat jaringan ganti (wifi ↔ data). Karena itu ada loop monitor yang ngecek tiap 30 detik: kalau jump `SHOPEE` hilang dari OUTPUT, diapasang lagi. Idempoten — jalan jalan ulang nggak bikin duplikat rule.
+netd often flushes custom rules when the network switches (wifi ↔ data). So there's a monitor loop checking every 30 seconds: if the `SHOPEE` jump disappears from OUTPUT, it gets re-applied. Idempotent — re-running never creates duplicate rules.
 
 ### Verified
 
-- `ping shopee.co.id` → 127.0.0.1 (hosts aktif)
-- `curl -v https://shopee.co.id` → Connection refused (iptables aktif)
-- `curl https://www.google.com` → 200 OK (internet normal)
+- `ping shopee.co.id` → 127.0.0.1 (hosts active)
+- `curl -v https://shopee.co.id` → Connection refused (iptables active)
+- `curl https://www.google.com` → 200 OK (normal internet)
 
 ---
 
-## Bedanya sama Magisk "hosts module" biasa (#beda-vs-hosts-module)
+## How it differs from a plain Magisk hosts module (#vs-hosts-module)
 
-Magisk host modules populer (Energized, AdAway, dll) itu cuma **satu lapis**: domain block via hosts.
+Popular Magisk hosts modules (Energized, AdAway, etc.) are **single-layer**: domain blocking via hosts only.
 
-| | Hosts module biasa | Module ini |
+| | Plain hosts module | This module |
 |---|---|---|
-| Struktur | `<module>/system/etc/hosts` | sama + `service.sh` + `uninstall.sh` |
-| Skope | blokir domain iklan/spam | khusus ekosistem Shopee/Sea, SEMUA subdomain + regional |
-| Lapisan | DNS doang | **DNS + iptables REJECT** |
-| Kalau IP di-cache | LOLOS — domain-nya ke block tapi IP lama bisa tetap dipanggil app | tetap kena REJECT |
-| Kalau dapat IP baru di range Shopee | LOLOS | tetap kena REJECT (range-based) |
-| Persist when netd reset | n/a (animasi) | auto re-apply tiap 30 detik |
-| Impact ke traffic lain | bisa overblocking | 0 — hanya range Shopee |
+| Structure | `<module>/system/etc/hosts` only | hosts + `service.sh` + `uninstall.sh` |
+| Scope | ad/spam domain blocklist | Shopee/Sea ecosystem ONLY, all subdomains + regional |
+| Layer(s) | DNS only | **DNS + iptables REJECT** |
+| Cached IP | LEAKS — domain blocked but old IPs can still be called | still REJECTed |
+| New IP inside Shopee range | LEAKS | still REJECTed (range-based) |
+| Survives netd reset | n/a | auto re-applies every 30s |
+| Collateral | can over-block | 0 — only Shopee ranges |
 
-Intinya: hosts module biasa **menebak nama**, andre ini **menutup alamat**. Kombinasi nama (DNS) + alamat (iptables) — kalau DNS gagal ke-block, range IP-nya masih di-REJECT.
+Bottom line: a plain hosts module **guesses names**, this one **closes addresses**. Name (DNS) + address (iptables) combined — if DNS fails to block, the IP range still gets REJECTed.
 
 ---
 
 ## Install
 
 ```sh
-# Salin folder module/ ke /data/adb/modules/shopee_blocker/
-# lalu reboot, atau langsung dari Termux:
+# Option A: install the release .zip directly via Magisk app (Modules → Install from storage)
+# Option B: copy the module/ folder to /data/adb/modules/shopee_blocker/ and reboot,
+#           or apply live from Termux:
 su -c '
   cp -r module /data/adb/modules/shopee_blocker
   sh /data/adb/modules/shopee_blocker/service.sh
@@ -121,34 +122,34 @@ su -c '
 ## Monitor
 
 ```sh
-# pantau percobaan koneksi ke Shopee
+# watch connection attempts to Shopee in real time
 su -c 'sh /data/adb/modules/shopee_blocker/shopee_monitor.sh'
 ```
 
 ## Uninstall
 
-Hapus folder module atau jalankan `uninstall.sh`:
+Remove the module folder or run `uninstall.sh`:
 
 ```sh
 su -c 'sh /data/adb/modules/shopee_blocker/uninstall.sh'
 ```
 
-Semua bersih: chain `SHOPEE` dihapus, hosts kembali normal.
+Clean slate: the `SHOPEE` chain is removed, hosts back to normal.
 
 ---
 
-## Struktur
+## Structure
 
 ```
 module/
-  module.prop          <- metadata Magisk
-  service.sh           <- pasang chain SHOPEE + monitor loop
-  uninstall.sh         <- bersihkan iptables
-  system/etc/hosts     <- block list domain Shopee/Sea
+  module.prop          <- Magisk metadata
+  service.sh           <- install SHOPEE chain + monitor loop
+  uninstall.sh         <- clean up iptables
+  system/etc/hosts     <- Shopee/Sea domain blocklist
 tools/
-  shopee_monitor.sh    <- pantau percobaan koneksi via conntrack + iptables
+  shopee_monitor.sh    <- watch connection attempts via conntrack + iptables
 ```
 
 ## Legal-ish
 
-Repository ini untuk kontrol user atas device sendiri. Tidak dimaksudkan sebagai penyerang, bukan dox, dan bukan bahan iklan. Fitur yang diblokir di sini adalah redirect/tracking yang **tidak disetujui** saat user klik link — bukan transaksi yang dipilih user secara sadar.
+This repo is about the user's control over their own device. Not an attack, not a dox, not ad material. What's blocked here are redirects/tracking **you never approved** when tapping a link — not transactions you consciously chose.
