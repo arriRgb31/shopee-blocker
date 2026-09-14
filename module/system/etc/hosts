@@ -1,0 +1,100 @@
+127.0.0.1       localhost
+::1             ip6-localhost
+
+# ===== SHOPEE BLOCKER =====
+# Block all Shopee / Sea activity
+# Semua domain Shopee / Sea Group dipetakan ke 0.0.0.0
+# supaya tidak pernah dikirim query DNS keluar.
+
+# --- Shopee Indonesia (utama) ---
+0.0.0.0 shopee.co.id
+0.0.0.0 www.shopee.co.id
+0.0.0.0 m.shopee.co.id
+0.0.0.0 s.shopee.co.id
+0.0.0.0 api.shopee.co.id
+0.0.0.0 seller.shopee.co.id
+0.0.0.0 sellercenter.shopee.co.id
+0.0.0.0 chat.shopee.co.id
+0.0.0.0 pay.shopee.co.id
+0.0.0.0 banco.shopee.co.id
+0.0.0.0 live.shopee.co.id
+0.0.0.0 mall.shopee.co.id
+0.0.0.0 flash.shopee.co.id
+0.0.0.0 buyer.shopee.co.id
+0.0.0.0 me.shopee.co.id
+0.0.0.0 help.shopee.co.id
+0.0.0.0 support.shopee.co.id
+0.0.0.0 wallet.shopee.co.id
+0.0.0.0 cf.shopee.co.id
+0.0.0.0 images.shopee.co.id
+0.0.0.0 app-advertising.shopee.co.id
+0.0.0.0 deeplink.shopee.co.id
+0.0.0.0 id.shopee.co.id
+
+# --- Shopee Global & Regional ---
+0.0.0.0 shopee.com
+0.0.0.0 www.shopee.com
+0.0.0.0 m.shopee.com
+0.0.0.0 api.shopee.com
+0.0.0.0 shopee.com.my
+0.0.0.0 www.shopee.com.my
+0.0.0.0 m.shopee.com.my
+0.0.0.0 s.shopee.com.my
+0.0.0.0 api.shopee.com.my
+0.0.0.0 seller.shopee.com.my
+0.0.0.0 shopee.sg
+0.0.0.0 www.shopee.sg
+0.0.0.0 m.shopee.sg
+0.0.0.0 s.shopee.sg
+0.0.0.0 api.shopee.sg
+0.0.0.0 shopee.vn
+0.0.0.0 www.shopee.vn
+0.0.0.0 m.shopee.vn
+0.0.0.0 s.shopee.vn
+0.0.0.0 live.shopee.vn
+0.0.0.0 shopee.co.th
+0.0.0.0 www.shopee.co.th
+0.0.0.0 m.shopee.co.th
+0.0.0.0 s.shopee.co.th
+0.0.0.0 shopee.ph
+0.0.0.0 www.shopee.ph
+0.0.0.0 m.shopee.ph
+0.0.0.0 shopee.tw
+0.0.0.0 www.shopee.tw
+0.0.0.0 m.shopee.tw
+0.0.0.0 shopee.com.br
+0.0.0.0 shopee.com.mx
+0.0.0.0 shopee.com.co
+0.0.0.0 shopee.com.pe
+0.0.0.0 shopee.cl
+0.0.0.0 shopee.pl
+0.0.0.0 shopee.es
+0.0.0.0 shopee.ro
+0.0.0.0 shopee.hu
+0.0.0.0 shopee.cz
+0.0.0.0 shopee.bg
+0.0.0.0 shopee.hr
+0.0.0.0 shopee.gr
+0.0.0.0 shopee.sk
+0.0.0.0 shopee.si
+0.0.0.0 shopee.lt
+0.0.0.0 shopee.lv
+0.0.0.0 shopee.ee
+
+# --- Short link / tracking / ads ---
+0.0.0.0 shopee.io
+0.0.0.0 shopeeads.com
+0.0.0.0 www.shopeeads.com
+0.0.0.0 shope.ee
+0.0.0.0 www.shope.ee
+0.0.0.0 shp.ee
+0.0.0.0 www.shp.ee
+0.0.0.0 shopeemobile.com
+0.0.0.0 deo.shopeemobile.com
+0.0.0.0 app.shopeemobile.com
+
+# --- Sea Group (induk) ---
+0.0.0.0 sea.com
+0.0.0.0 www.sea.com
+0.0.0.0 seagroup.com
+0.0.0.0 www.seagroup.com

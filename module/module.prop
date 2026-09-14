@@ -1,0 +1,6 @@
+id=shopee_blocker
+name=Shopee Activity Blocker
+version=v1.0
+versionCode=100
+author=arriRgb31
+description=Block seluruh ekosistem Shopee/Sea Group di level DNS (hosts systemless) + iptables REJECT untuk IP range Shopee. Berlaku untuk semua app/browser/link/redirect. Anti auto-download & auto-launch web Shopee.
