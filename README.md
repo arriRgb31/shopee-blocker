@@ -4,6 +4,14 @@ Kill the whole Shopee / Sea ecosystem at the DNS + network level. No app. No lin
 
 ---
 
+## Wait, what is Shopee? (#what-is-shopee)
+
+Shopee is a **Southeast Asian e-commerce platform** owned by Sea Group (Singapore), one of the biggest online marketplaces in the region. It's available in Indonesia, Malaysia, Singapore, Vietnam, Thailand, the Philippines, Taiwan, and a bunch more countries across SEA and LatAm — plus a mobile app, a website, seller tools, ShopeePay, ShopeeFood/Shopee mart meta-services, and Shopeemobile tracking infra.
+
+That's exactly why this repo exists: Shopee isn't a single URL. It's a **family of sites, apps, and redirect services**. Blocking `shopee.co.id` alone is pointless if a short-link or a regional branch still gets through. So this module blocks the whole family across every region and subdomain.
+
+---
+
 ## Why this exists (#why)
 
 It's not about hating Shopee. It's about **control**.
@@ -13,6 +21,8 @@ On modern Android, "default link handler" and app archive features are sneaky �
 - Shopee redirect handlers,
 - Shopee web pages that beg you to install the app,
 - auto-tracking / auto-launch.
+
+And here's the thing: Shopee runs one of the **most aggressive ad / tracking machines** in the SEA app ecosystem. Their ads don't just sit in their app — they leak into *other* apps, browsers, share sheets, and system link handlers. Click a promo link someone pasted in a chat → you're on Shopee web. Try to just browse → some random Shopee ad deep-links into the app. The platform is built to **funnel you in** at every opportunity.
 
 Result: data quota burned, attention funneled into a store you never asked for, and your device becomes a redirect landfill.
 
@@ -38,9 +48,30 @@ The root problem is not "the Shopee app is installed." The problem is the **shor
 | Web you didn't ask for | "Archive app" / "open default linked links" still call Shopee domains |
 | Data hungry | Shopee page loaders = thousands of requests, minimum quota to burn |
 | Install nagging | Shopee web always pushes you to install the app — pressure, not choice |
+| Aggressive ads | Shopee ads deep-link into other apps, browsers & share sheets — everywhere |
 | Site family (SEA) | Blocking one domain isn't enough; Shopee can come through another branch |
 
 This repo doesn't fix "why Shopee behaves that way" — that's their business problem. What's handled here: **your device is not their default target anymore.**
+
+---
+
+## The ethical part: this is NOT stealing, harming, or threatening Shopee (#ethics)
+
+Let's be very clear about what this module does and does NOT do — no drama, no grey area:
+
+**This module does NOT:**
+- ❌ steal, scrape, or exfiltrate any data — from Shopee or from you,
+- ❌ attack, DDOS, throttle, or degrade Shopee's servers/services,
+- ❌ block anyone *else* — it only blocks *your own device* from connecting to Shopee,
+- ❌ touch transactions, accounts, money, or user data of any kind,
+- ❌ promote piracy, hacking, or fraud.
+
+**What it actually does:**
+- ✅ makes **your own device** (a device you own, running software you control) refuse connections to a specific set of domains/IPs,
+- ✅ equivalent to uninstalling an app or adding a hosts entry — nothing more,
+- ✅ gives **you** the choice that Shopee's own platform architecture was designed to take away.
+
+Shopee is a legitimate ad-driven business and is free to keep selling inside *their* app. This module never goes near their servers or their systems. It simply reclaims a user's right to decide what their own phone connects to. That's the whole trick — it's **one-way, local, and nobody else is affected**.
 
 ---
 
@@ -152,4 +183,9 @@ tools/
 
 ## Legal-ish
 
-This repo is about the user's control over their own device. Not an attack, not a dox, not ad material. What's blocked here are redirects/tracking **you never approved** when tapping a link — not transactions you consciously chose.
+This repo is about the user's control over their own device — nothing more, nothing less.
+
+- No data is stolen or leaked — nothing leaves the device except requests that only *fail*.
+- No harm to Shopee's business infrastructure — their servers are never touched; we simply decline connections on our side.
+- No threat, no attack, no reverse-engineering of their systems.
+- Shopee keeps its ads and business models. This module only restores one thing: **your right to say no** to redirects/tracking you never approved when tapping a link — not transactions you consciously chose.
